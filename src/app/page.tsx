@@ -71,7 +71,7 @@ export default function Home() {
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                 <CalendarX2 className="h-12 w-12 mb-4" />
-                <p className="text-lg font-medium">No to-do's found</p>
+                <p className="text-lg font-medium">No to-do&apos;s found</p>
                 <p className="text-sm">Add a new task for this day</p>
               </div>
             )}
