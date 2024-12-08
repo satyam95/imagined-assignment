@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,13 +11,35 @@ import { Plus } from "lucide-react";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
-const AddTodoDialog = () => {
-  const [open, setOpen] = useState(false);
+interface AddTodoDialogProps {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  todo?: { id: string; title: string; description?: string };
+  onSave: (data: { id?: string; title: string; description?: string }) => void;
+}
+
+const AddTodoDialog = ({ open, setOpen, todo, onSave }: AddTodoDialogProps) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  useEffect(() => {
+    if (todo) {
+      setTitle(todo.title || "");
+      setDescription(todo.description || "");
+    } else {
+      setTitle("");
+      setDescription("");
+    }
+  }, [todo]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (title.trim()) {
+      onSave({ id: todo?.id, title, description });
+      setTitle("");
+      setDescription("");
+      setOpen(false);
+    }
   };
 
   return (
@@ -32,7 +54,7 @@ const AddTodoDialog = () => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Todo</DialogTitle>
+          <DialogTitle>{todo ? "Edit Todo" : "Add New Todo"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
@@ -67,7 +89,7 @@ const AddTodoDialog = () => {
             >
               Cancel
             </Button>
-            <Button type="submit">Add Todo</Button>
+            <Button type="submit">{todo ? "Save Changes" : "Add Todo"}</Button>
           </div>
         </form>
       </DialogContent>

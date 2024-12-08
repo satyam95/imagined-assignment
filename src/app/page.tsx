@@ -5,59 +5,39 @@ import CalendarStrip from "@/components/CalendarStrip";
 import { CalendarX2 } from "lucide-react";
 import TodoItem from "@/components/TodoItem";
 import AddTodoDialog from "@/components/AddTodoDialog";
+import { useTodoStore, Todo } from "@/lib/store";
 
-interface Todo {
-  id: string;
+
+type TodoInput = {
+  id?: string;
   title: string;
   description?: string;
-  completed: boolean;
-  date: Date;
-}
-
-const initialTodos: Todo[] = [
-  {
-    id: "1",
-    title: "Meet Jack Sparrow",
-    description: "Free him from the prison in Port Royal",
-    completed: true,
-    date: new Date(),
-  },
-  {
-    id: "2",
-    title: "Head for Tortuga",
-    description: "Assemble a crew there",
-    completed: false,
-    date: new Date(),
-  },
-  {
-    id: "3",
-    title: "Chase The Pearl",
-    description: "All the way up to Isle de Muerta",
-    completed: false,
-    date: new Date(),
-  },
-  {
-    id: "4",
-    title: "Find Elizabeth",
-    description: "Prevent Barbossa from hurting her",
-    completed: false,
-    date: new Date(),
-  },
-  {
-    id: "5",
-    title: "Shoot Barbossa",
-    description: "After lifting the curse and depriving him of immortality",
-    completed: false,
-    date: new Date(),
-  },
-];
+};
 
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [todos, setTodos] = useState<Todo[]>(initialTodos);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const todos = useTodoStore((state) => state.todos);
+  const addTodo = useTodoStore((state) => state.addTodo);
+  const toggleTodo = useTodoStore((state) => state.toggleTodo);
+  const deleteTodo = useTodoStore((state) => state.deleteTodo);
+  const editTodo = useTodoStore((state) => state.editTodo);
+
+  const handleSaveTodo = (data: TodoInput) => {
+    if (data.id) {
+      editTodo(data.id, data.title, data.description);
+    } else {
+      addTodo(data.title, selectedDate, data.description, );
+    }
+    setDialogOpen(false);
+    setEditingTodo(null);
+  };
 
   const filteredTodos = todos.filter(
-    (todo) => todo.date.toDateString() === selectedDate.toDateString()
+    (todo) =>
+      todo.date.toISOString().split("T")[0] ===
+      selectedDate.toISOString().split("T")[0]
   );
 
   return (
@@ -76,7 +56,18 @@ export default function Home() {
           <h2 className="text-xl text-black font-semibold">Today</h2>
           <div className="mt-4 space-y-4">
             {filteredTodos.length > 0 ? (
-              filteredTodos.map((todo) => <TodoItem key={todo.id} {...todo} />)
+              filteredTodos.map((todo) => (
+                <TodoItem
+                  key={todo.id}
+                  {...todo}
+                  onToggle={toggleTodo}
+                  onDelete={deleteTodo}
+                  onEdit={() => {
+                    setEditingTodo(todo);
+                    setDialogOpen(true);
+                  }}
+                />
+              ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                 <CalendarX2 className="h-12 w-12 mb-4" />
@@ -86,7 +77,12 @@ export default function Home() {
             )}
           </div>
         </div>
-        <AddTodoDialog />
+        <AddTodoDialog
+          open={dialogOpen}
+          setOpen={setDialogOpen}
+          todo={editingTodo ?? undefined}
+          onSave={handleSaveTodo}
+        />
       </div>
     </main>
   );

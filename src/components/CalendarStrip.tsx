@@ -59,7 +59,7 @@ const CalendarStrip = ({ selectedDate, onDateSelect }: CalendarStripProps) => {
     <div className="relative">
       <button
         onClick={handlePrevDay}
-        className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background transition-colors"
+        className="hidden md:block absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background transition-colors"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
@@ -114,7 +114,7 @@ const CalendarStrip = ({ selectedDate, onDateSelect }: CalendarStripProps) => {
       </div>
       <button
         onClick={handleNextDay}
-        className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background transition-colors"
+        className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-background transition-colors"
       >
         <ChevronRight className="h-4 w-4" />
       </button>
